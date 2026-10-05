@@ -1,8 +1,11 @@
 # Parámetros y decisiones cerradas — Última Órbita
 
 Decisiones tomadas con el usuario para completar los vacíos del GDD. Los valores
-numéricos son **puntos de partida**, no valores validados: se ajustan al probar y
-se cambian acá, no en el código.
+numéricos son **puntos de partida**, no valores validados: se ajustan al probar.
+
+Este documento explica el **porqué** de cada valor. Los valores que consume el
+juego están en `src/config/parametros.js`, que es la fuente de verdad para el
+código: cambiar los números ahí, no en las escenas.
 
 ## Stack
 

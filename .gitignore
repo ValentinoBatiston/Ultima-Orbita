@@ -19,3 +19,8 @@ Thumbs.db
 # Local
 .env
 .env.local
+
+# Assets pendientes: los sprites definitivos los aporta el usuario.
+# Los mockups provisionales se generan en runtime, ver ASSETS.modoMockup en
+# src/config/parametros.js. Quitar esta línea cuando haya arte definitivo.
+assets/
