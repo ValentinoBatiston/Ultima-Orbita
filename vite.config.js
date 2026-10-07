@@ -38,14 +38,6 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                // Nombres de archivo ESTABLES, sin hash. Importante: la
-                // publicación hace force-push sobre gh-pages, así que los
-                // archivos viejos desaparecen en cada deploy. Si el index.html
-                // llevara hash y alguien tuviera la versión anterior en caché,
-                // pediría un bundle que ya no existe y la página daría 404.
-                entryFileNames: 'assets/juego.js',
-                chunkFileNames: 'assets/[name].js',
-                assetFileNames: 'assets/[name][extname]',
                 manualChunks: {
                     phaser: ['phaser']
                 }
