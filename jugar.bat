@@ -1,7 +1,10 @@
 @echo off
 REM ============================================================
-REM  Ultima Orbita - iniciar el juego
-REM  Doble clic en este archivo. Se abre solo en el navegador.
+REM  Ultima Orbita - iniciar el juego en esta maquina
+REM
+REM  Si no tenes Node.js instalado, esto no va a funcionar.
+REM  En ese caso jugalo online, que no necesita nada:
+REM      https://valentinobatiston.github.io/Ultima-Orbita/
 REM ============================================================
 setlocal
 cd /d "%~dp0"
@@ -12,8 +15,18 @@ echo.
 
 where node >nul 2>&1
 if errorlevel 1 (
-    echo   ERROR: Node.js no esta instalado.
-    echo   Descargalo de https://nodejs.org y volve a intentar.
+    echo   ==========================================================
+    echo    NO SE ENCONTRO NODE.JS
+    echo   ==========================================================
+    echo.
+    echo   Este archivo necesita Node.js para funcionar.
+    echo.
+    echo   Podes jugar sin instalarlo, en linea:
+    echo     https://valentinobatiston.github.io/Ultima-Orbita/
+    echo.
+    echo   Para instalar Node.js, descargalo de:
+    echo     https://nodejs.org  ^(eleccion LTS, un solo clic^)
+    echo   y volve a hacer doble clic en este archivo.
     echo.
     pause
     exit /b 1
@@ -24,6 +37,7 @@ if not exist node_modules (
     echo.
     call npm install
     if errorlevel 1 (
+        echo.
         echo   ERROR: fallo la instalacion de dependencias.
         pause
         exit /b 1
