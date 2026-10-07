@@ -8,12 +8,21 @@ creciente.
 
 ## Cómo jugar
 
-**Opción 1 — doble clic**
+**Opción 1 — online, sin instalar nada**
 
-Ejecutá `jugar.bat`. Se instala lo necesario, compila y abre el juego en el
+El juego está publicado en GitHub Pages:
+
+**<https://valentinobatiston.github.io/Ultima-Orbita/>**
+
+Se actualiza sola con cada cambio que se mergee a `main`, así que siempre está
+al día.
+
+**Opción 2 — desde tu máquina**
+
+Ejecutá `jugar.bat`: instala lo necesario, compila y abre el juego en el
 navegador.
 
-**Opción 2 — desde la terminal**
+O a mano:
 
 ```powershell
 npm install
@@ -22,8 +31,8 @@ npm run dev
 
 Y abrí <http://localhost:8080>.
 
-Requisitos: **Node.js 18 o superior**. No hay nada más que instalar a mano; las
-dependencias y los recursos del juego están en el repositorio.
+Requisitos para la opción 2: **Node.js 18 o superior**. No hay nada más que
+instalar a mano; las dependencias y los recursos del juego están en el repositorio.
 
 ## Controles
 

@@ -1,0 +1,58 @@
+# Despliega el juego en GitHub Pages.
+#
+# Cada vez que haya un push a la rama principal, compila el juego y publica
+# dist/ en GitHub Pages. La página queda siempre actualizada con el último
+# commit, sin hacer nada manual.
+#
+# Para activarlo la primera vez, en GitHub:
+#   Settings -> Pages -> Build and deployment -> Source -> GitHub Actions
+#
+# Ver docs/PARAMETROS.md y README.md.
+
+name: Desplegar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Permite relanzar el deploy desde la pestaña Actions sin hacer un push.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Si hay dos deploys seguidos, cancela el anterior.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compilar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Publicar
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicar.outputs.page_url }}
+    steps:
+      - id: publicar
+        uses: actions/deploy-pages@v4
