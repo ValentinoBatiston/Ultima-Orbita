@@ -59,7 +59,7 @@ export const NIVELES = {
         movimientoEnemigo: 'recta',
         disparoEnemigoMs: 1500,
         velocidadAsteroide: 60,
-        spawnAsteroideMs: 1800,
+        spawnAsteroideMs: 2500,
         escombros: null,
         spawnEscombrosMs: null
     },
@@ -73,7 +73,7 @@ export const NIVELES = {
         movimientoEnemigo: 'recta+horizontal',
         disparoEnemigoMs: 1250,
         velocidadAsteroide: 85,
-        spawnAsteroideMs: 1400,
+        spawnAsteroideMs: 1800,
         escombros: { gruposMin: 2, gruposMax: 3 },
         spawnEscombrosMs: 3000
     },
@@ -87,7 +87,7 @@ export const NIVELES = {
         movimientoEnemigo: 'recta+horizontal+perpendicular',
         disparoEnemigoMs: 1000,
         velocidadAsteroide: 110,
-        spawnAsteroideMs: 1100,
+        spawnAsteroideMs: 1400,
         escombros: { gruposMin: 3, gruposMax: 5 },
         spawnEscombrosMs: 2000
     }

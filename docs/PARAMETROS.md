@@ -42,7 +42,7 @@ Objetivo de duración: **150 s por nivel** (2.5 min), dentro del rango de 2-3 mi
 | Distancia del nivel | 13.500 px | 18.000 px | 22.500 px |
 | Enemigos máx. simultáneos | 5 | 7 | 9 |
 | Intervalo de aparición de enemigo | cada 2 s | cada 1.5 s | cada 0.9 s |
-| Intervalo de aparición de asteroide | cada 1.8 s | cada 1.4 s | cada 1.1 s |
+| Intervalo de aparición de asteroide | cada 2.5 s | cada 1.8 s | cada 1.4 s |
 | Intervalo de aparición de escombros | — | cada 3 s | cada 2 s |
 | Grupo de escombros | no aparecen | 2-3 piezas | 3-5 piezas |
 | Velocidad enemigo | 70 px/s | 85 px/s | 100 px/s |
@@ -59,11 +59,18 @@ convierte a píxeles con la velocidad de scroll de cada nivel, para que la densi
 no dependa de la tasa de frames. Una versión anterior comparaba milisegundos contra
 píxeles y los intervalos se iban de 2 s a 30 s, dejando el nivel 1 casi vacío.
 
-**Los objetos lentos permanecen más tiempo en pantalla**, así que la cantidad
-concreta en pantalla no crece mucho de un nivel al otro: lo que sube es la
-velocidad y el patrón de movimiento, no el bruto. Si querés que la progresión se
-note más en cantidad, hay que subir `enemigosMax` del nivel 3 o bajar el intervalo
-de asteroides del nivel 1.
+**Los objetos lentos permanecen más tiempo en pantalla.** Como la velocidad sube
+por nivel, un objeto del nivel 3 desaparece antes que uno del nivel 1, así que
+subir la velocidad sin tocar los intervalos achica la cantidad en pantalla. Por
+eso la progresión de dificultad se repartió así:
+
+- **Asteroides: cantidad constante** (~5 en pantalla en los tres niveles).
+- **Enemigos y escombros: cantidad creciente** (5 → 6 → 9 enemigos, y 0 → 8 → 12
+  escombros).
+
+Si al probar el nivel 2 o el 3 se sienten abrumadores, el culpable probable son
+los **escombros**: son 8 en pantalla en el nivel 2 y 12 en el nivel 3. Subir
+`spawnEscombrosMs` es el ajuste más directo.
 
 El Nivel 1 es el único con enemigos estrictamente en línea recta (§9). Los niveles
 2 y 3 suman desplazamientos horizontales y perpendiculares.
@@ -73,10 +80,21 @@ Los escombros no aparecen en el Nivel 1: §10 solo los menciona para los niveles
 
 ### Cuánto se ve en pantalla
 
-Vida en pantalla ≈ `(720 + alto del sprite) / velocidad`. En el nivel 1 un enemigo
-vive unos 11 s y un asteroide 12.8 s, así que con los intervalos actuales quedan
-a la vez alrededor de **5 enemigos y 7 asteroides**. En el nivel 3, al ser más
-rápidos, quedan unos **8 enemigos y 6 asteroides**, más los escombros.
+Vida en pantalla ≈ `(720 + alto del sprite) / velocidad`. Medido en el navegador,
+con el juego corriendo:
+
+| | Nivel 1 | Nivel 2 | Nivel 3 |
+|---|---|---|---|
+| Enemigos en pantalla | 5 | 6 | 9 |
+| Asteroides en pantalla | 5 | 5 | 6 |
+| Escombros en pantalla | 0 | 8 | 12 |
+| Obstáculos totales | 5 | 13 | 18 |
+
+Los intervalos de aparición se miden por distancia en píxeles, no por tiempo: el
+`Generador` los convierte con la velocidad de scroll de cada nivel, para que la
+densidad no dependa de la tasa de frames. Una versión anterior comparaba
+milisegundos contra píxeles y los intervalos se iban de 2 s a 30 s, dejando el
+nivel 1 casi vacío.
 
 ## Vidas y reaparición
 
