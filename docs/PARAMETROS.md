@@ -40,29 +40,43 @@ Objetivo de duración: **150 s por nivel** (2.5 min), dentro del rango de 2-3 mi
 |---|---|---|---|
 | Velocidad de scroll | 90 px/s | 120 px/s | 150 px/s |
 | Distancia del nivel | 13.500 px | 18.000 px | 22.500 px |
-| Enemigos máx. simultáneos | 3 | 5 | 7 |
-| Intervalo de spawn enemigo | 3.0 s | 2.2 s | 1.6 s |
+| Enemigos máx. simultáneos | 5 | 7 | 9 |
+| Intervalo de aparición de enemigo | cada 2 s | cada 1.5 s | cada 0.9 s |
+| Intervalo de aparición de asteroide | cada 1.8 s | cada 1.4 s | cada 1.1 s |
+| Intervalo de aparición de escombros | — | cada 3 s | cada 2 s |
+| Grupo de escombros | no aparecen | 2-3 piezas | 3-5 piezas |
 | Velocidad enemigo | 70 px/s | 85 px/s | 100 px/s |
 | Movimiento enemigo | solo recta | + horizontal | + ambos |
 | Disparo enemigo | cada 1.5 s | cada 1.25 s | cada 1.0 s |
 | Proyectil enemigo | 300 px/s hacia abajo | | |
 | Velocidad asteroide | 60 px/s | 85 px/s | 110 px/s |
-| Spawn asteroide | cada 2.5 s | cada 1.8 s | cada 1.3 s |
-| Spawn escombros | — | cada 4 s | cada 2.5 s |
-| Escombros | no aparecen | grupos de 2-3 | grupos de 3-5 |
+| Escombros | no aparecen | sí | sí, más frecuentes |
 
-El intervalo de disparo enemigo baja 0.25 s por nivel, según lo acordado. La
-dificultad sube por velocidad de scroll, cantidad y frecuencia, nunca con sistemas
-nuevos (§14).
+El intervalo de disparo enemigo baja 0.25 s por nivel, según lo acordado.
 
-Los intervalos de aparición miden **distancia recorrida y no tiempo**, para que la
-densidad no cambie con la tasa de frames.
+**Los intervalos de aparición son TIEMPOS, no distancias.** El `Generador` los
+convierte a píxeles con la velocidad de scroll de cada nivel, para que la densidad
+no dependa de la tasa de frames. Una versión anterior comparaba milisegundos contra
+píxeles y los intervalos se iban de 2 s a 30 s, dejando el nivel 1 casi vacío.
+
+**Los objetos lentos permanecen más tiempo en pantalla**, así que la cantidad
+concreta en pantalla no crece mucho de un nivel al otro: lo que sube es la
+velocidad y el patrón de movimiento, no el bruto. Si querés que la progresión se
+note más en cantidad, hay que subir `enemigosMax` del nivel 3 o bajar el intervalo
+de asteroides del nivel 1.
 
 El Nivel 1 es el único con enemigos estrictamente en línea recta (§9). Los niveles
 2 y 3 suman desplazamientos horizontales y perpendiculares.
 
 Los escombros no aparecen en el Nivel 1: §10 solo los menciona para los niveles
 2 y 3.
+
+### Cuánto se ve en pantalla
+
+Vida en pantalla ≈ `(720 + alto del sprite) / velocidad`. En el nivel 1 un enemigo
+vive unos 11 s y un asteroide 12.8 s, así que con los intervalos actuales quedan
+a la vez alrededor de **5 enemigos y 7 asteroides**. En el nivel 3, al ser más
+rápidos, quedan unos **8 enemigos y 6 asteroides**, más los escombros.
 
 ## Vidas y reaparición
 

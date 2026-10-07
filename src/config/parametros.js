@@ -40,19 +40,26 @@ export const PROYECTIL_ENEMIGO = {
     velocidad: 300
 };
 
-/** Intervalos y comportamientos por nivel. §10 y §14. */
+/**
+ * Intervalos y comportamientos por nivel. §10 y §14.
+ *
+ * spawn*Ms e intervalo de disparo están en MILISEGUNDOS. El Generador los
+ * convierte a píxeles con la velocidad de scroll de cada nivel, así la
+ * densidad no depende de la tasa de frames. No comparar estos valores contra
+ * distancia directamente.
+ */
 export const NIVELES = {
     1: {
         nombre: 'Zona de Tránsito',
         velocidadScroll: 90,
         distancia: 13500,
-        enemigosMax: 3,
-        spawnEnemigoMs: 3000,
+        enemigosMax: 5,
+        spawnEnemigoMs: 2000,
         velocidadEnemigo: 70,
         movimientoEnemigo: 'recta',
         disparoEnemigoMs: 1500,
         velocidadAsteroide: 60,
-        spawnAsteroideMs: 2500,
+        spawnAsteroideMs: 1800,
         escombros: null,
         spawnEscombrosMs: null
     },
@@ -60,29 +67,29 @@ export const NIVELES = {
         nombre: 'Campo de Escombros',
         velocidadScroll: 120,
         distancia: 18000,
-        enemigosMax: 5,
-        spawnEnemigoMs: 2200,
+        enemigosMax: 7,
+        spawnEnemigoMs: 1500,
         velocidadEnemigo: 85,
         movimientoEnemigo: 'recta+horizontal',
         disparoEnemigoMs: 1250,
         velocidadAsteroide: 85,
-        spawnAsteroideMs: 1800,
+        spawnAsteroideMs: 1400,
         escombros: { gruposMin: 2, gruposMax: 3 },
-        spawnEscombrosMs: 4000
+        spawnEscombrosMs: 3000
     },
     3: {
         nombre: 'Última Órbita',
         velocidadScroll: 150,
         distancia: 22500,
-        enemigosMax: 7,
-        spawnEnemigoMs: 1600,
+        enemigosMax: 9,
+        spawnEnemigoMs: 900,
         velocidadEnemigo: 100,
         movimientoEnemigo: 'recta+horizontal+perpendicular',
         disparoEnemigoMs: 1000,
         velocidadAsteroide: 110,
-        spawnAsteroideMs: 1300,
+        spawnAsteroideMs: 1100,
         escombros: { gruposMin: 3, gruposMax: 5 },
-        spawnEscombrosMs: 2500
+        spawnEscombrosMs: 2000
     }
 };
 

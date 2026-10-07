@@ -88,6 +88,21 @@ Verificado en 4.2.1 leyendo el paquete instalado. **No trasladar suposiciones de
   terceros de 2023. La vía oficial son los templates de GitHub
   (`phaserjs/template-vite`), que además pinean `phaser@4.0.0`.
 
+### Trampa de unidades en el Generador (resuelta, no la repitas)
+
+Los intervalos de aparición de `NIVELES` están en **milisegundos**
+(`spawnEnemigoMs`, `spawnAsteroideMs`, `spawnEscombrosMs`), pero el `Generador`
+mide la aparición por **distancia en píxeles** para que la densidad no dependa
+de la tasa de frames. La conversión a píxeles se hace en el constructor:
+
+```js
+const aPx = (ms) => (this.cfg.velocidadScroll * ms) / 1000;
+```
+
+Si se comparan los milisegundos contra la distancia sin convertir, un intervalo
+de 2000 ms se vuelve 2000 píxeles, que a 90 px/s son **33 segundos** en vez de 2.
+Pasó: el nivel 1 quedaba vacío y parecía un problema de tuning.
+
 ### Trampa del estado de partida (ya resuelta, no la repitas)
 
 `EstadoPartida.estado` debe volver a `JUGANDO` en **cada** transición. Si

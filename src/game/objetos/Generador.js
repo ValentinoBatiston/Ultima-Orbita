@@ -27,8 +27,19 @@ export default class Generador {
         this.enemigos = [];
         this.obstaculos = [];
 
-        // Los temporizadores se miden en distancia recorrida y no en tiempo,
-        // para que la densidad de aparición no cambie con los frames.
+        // La aparición se mide por DISTANCIA recorrida y no por tiempo, para
+        // que la densidad no cambie con la tasa de frames.
+        //
+        // OJO: los intervalos de la configuración están en milisegundos, así
+        // que hay que convertirlos a píxeles con la velocidad de scroll de este
+        // nivel. Sin esta conversión se comparan milisegundos contra píxeles y
+        // el intervalo se va de 3 s a 33 s.
+        const aPx = (ms) => (this.cfg.velocidadScroll * ms) / 1000;
+
+        this.distanciaEntreEnemigos = aPx(this.cfg.spawnEnemigoMs);
+        this.distanciaEntreAsteroides = aPx(this.cfg.spawnAsteroideMs);
+        this.distanciaEntreEscombros = aPx(this.cfg.spawnEscombrosMs);
+
         this.proximoEnemigo = 0;
         this.proximoAsteroide = 0;
         this.proximoEscombros = this.cfg.escombros ? 0 : Infinity;
@@ -49,14 +60,14 @@ export default class Generador {
 
         if (this.enemigos.length < this.cfg.enemigosMax && distanciaRecorrida >= this.proximoEnemigo) {
             nuevosEnemigos.push(new Enemigo(this.scene, this.nivel));
-            this.proximoEnemigo += this.cfg.spawnEnemigoMs;
+            this.proximoEnemigo += this.distanciaEntreEnemigos;
         }
 
         if (distanciaRecorrida >= this.proximoAsteroide) {
             nuevosObstaculos.push(
                 new Obstaculo(this.scene, this.nivel, 'asteroide', Obstaculo.xAleatorio(40))
             );
-            this.proximoAsteroide += this.cfg.spawnAsteroideMs;
+            this.proximoAsteroide += this.distanciaEntreAsteroides;
         }
 
         const cfgEscombros = this.cfg.escombros;
@@ -69,7 +80,7 @@ export default class Generador {
                 const x = Math.min(PANTALLA.ancho - 24, Math.max(24, xBase + PhaserMath.Between(-36, 36)));
                 nuevosObstaculos.push(new Obstaculo(this.scene, this.nivel, 'escombro', x));
             }
-            this.proximoEscombros += this.cfg.spawnEscombrosMs;
+            this.proximoEscombros += this.distanciaEntreEscombros;
         }
 
         this.enemigos.push(...nuevosEnemigos);
