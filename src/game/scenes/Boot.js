@@ -14,6 +14,7 @@
 import { Scene } from 'phaser';
 
 import { ASSETS, AUDIO, RUTAS_AUDIO } from '../../config/parametros.js';
+import { urlDeAsset } from '../utilidades/assets.js';
 
 export default class Boot extends Scene {
     constructor() {
@@ -54,7 +55,7 @@ export default class Boot extends Scene {
         };
 
         for (const [clave, archivo] of Object.entries(sprites)) {
-            this.load.image(clave, `${base}${archivo}`);
+            this.load.image(clave, urlDeAsset(`${base}${archivo}`));
         }
     }
 
@@ -77,11 +78,11 @@ export default class Boot extends Scene {
         };
 
         for (const [clave, archivo] of Object.entries(sfx)) {
-            this.load.audio(clave, `${base.sfx}${archivo}`);
+            this.load.audio(clave, urlDeAsset(`${base.sfx}${archivo}`));
         }
 
-        this.load.audio(AUDIO.musica.menu, `${base.musica}music-menu.mp3`);
-        this.load.audio(AUDIO.musica.juego, `${base.musica}music-game.mp3`);
+        this.load.audio(AUDIO.musica.menu, urlDeAsset(`${base.musica}music-menu.mp3`));
+        this.load.audio(AUDIO.musica.juego, urlDeAsset(`${base.musica}music-game.mp3`));
     }
 
     /**

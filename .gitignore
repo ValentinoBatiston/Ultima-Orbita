@@ -3,8 +3,13 @@ node_modules/
 
 # Build
 dist/
+dist-standalone/
 build/
 .vite/
+
+# Build autónomo: se genera con npm run build:standalone.
+# Son 12 MB y se reconstruye desde el código, no tiene sentido versionarlo.
+ultima-orbita.html
 
 # Logs
 *.log
