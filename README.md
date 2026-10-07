@@ -14,8 +14,8 @@ El juego está publicado en GitHub Pages:
 
 **<https://valentinobatiston.github.io/Ultima-Orbita/>**
 
-Se actualiza sola con cada cambio que se mergee a `main`, así que siempre está
-al día.
+La página sale de la rama `gh-pages` y se actualiza sola con cada cambio que se
+mergee a `main`, así que siempre está al día.
 
 **Opción 2 — desde tu máquina**
 
