@@ -2,8 +2,9 @@
 
 ## Estado del proyecto
 
-Arcade 2D de scroll vertical (tipo 1942) en Phaser. El andamiaje está montado,
-pero **el juego no tiene gameplay todavía**: `Nivel1` es un placeholder.
+Arcade 2D de scroll vertical (tipo 1942) en Phaser. **El juego está completo y
+es jugable de punta a punta**: menú, tres niveles, vidas, puntuación, Game Over y
+Victoria. Falta ajustar el tuning con pruebas reales del usuario.
 
 - Requisitos: `docs/GDD Trabajo final Desarrollo Tecnológico 2 - Valentino Batiston.pdf` (13 págs., 22 secciones). Fuente de verdad.
 - Stack: **JavaScript + Phaser 4.2.1 + Vite 6**. Antes de escribir código,
@@ -28,12 +29,35 @@ No hay lint, typecheck ni tests configurados. Si se agregan, documentarlos acá.
 
 ## Estructura
 
-- `src/config/parametros.js` — **todos** los valores de tuning.
-- `src/game/main.js` — config del juego Phaser.
-- `src/game/scenes/` — `Boot`, `MenuPrincipal`, `Nivel1` (placeholder).
-- `src/main.js` — bootstrap. Expone `window.juego` para depurar desde la consola.
+- `src/config/parametros.js` — **todos** los valores de tuning, más las claves de
+  sprites (`ASSETS.claves`) y de audio (`AUDIO.sfx`, `AUDIO.musica`).
+- `src/game/main.js` — config del juego y registro de escenas.
+- `src/game/estado/EstadoPartida.js` — patrón State + Observable. **Fuente única
+  de verdad de vidas, puntuación y nivel**, guardada en el registro de Phaser.
+  Se obtiene siempre con `obtenerEstado(scene)`.
+- `src/game/objetos/` — entidades: `Nave`, `Enemigo`, `Obstaculo`, `Estacion`,
+  `Proyectiles`, `Fondo`, `Generador`, y `sprite.js` (crear + colisión).
+- `src/game/scenes/` — `Boot`, `MenuPrincipal`, `EscenaNivel`, `HUD`,
+  `Pantallas.js` (GameOver + Victoria).
+- `src/game/servicios/Sonido.js` — SFX y música.
+- `src/game/utilidades/teclas.js` — `esperarTecla` (una pulsación = una acción).
 - `assets/` — `sprites/`, `music/`, `sfx/`. Es el `publicDir` de Vite, así que
   `assets/sprites/player.png` se carga como `'sprites/player.png'`.
+
+### Decisiones de diseño
+
+- **Una sola clase de nivel** (`EscenaNivel`) registrada tres veces con claves
+  `Nivel1/2/3`. Todo lo que distingue un nivel sale de `NIVELES`. Agregar un
+  nivel es agregar una entrada de configuración, no copiar una escena.
+- **Estrategia** para el movimiento de enemigos: cada nivel elige su función de
+  movimiento, sin condicionales acumuladas.
+- **Factory** en `Generador`: concentra los intervalos y límites de aparición de
+  §9, §10 y §14.
+- **Command** implícito en `Nave.mover()`: recibe direcciones lógicas, no teclas,
+  así que el único lugar que conoce WASD/flechas es `registrarTeclas`.
+- El HUD se refresca a 10 Hz con su propio `update`, no suscribiéndose a cada
+  cambio: `sumarAvance()` mueve la puntuación en cada frame y notificar eso serían
+  60 emisiones por segundo.
 
 ## Trampas de la API de Phaser 4
 
@@ -42,6 +66,10 @@ Verificado en 4.2.1 leyendo el paquete instalado. **No trasladar suposiciones de
 - **`textures.generate(clave, config)` ya no existe** en v4, pero la página de
   docs de Textures todavía lo muestra. Para generar texturas usar
   `Graphics.generateTexture(clave, ancho, alto)` sobre un `Graphics`.
+- **`sound.exists()` ya no existe.** Para saber si un audio está cargado:
+  `scene.cache.audio.exists(clave)`.
+- **`sound.add()` NO reproduce el sonido**, solo lo crea. Hay que llamar a
+  `play()` aparte o la música queda muda.
 - `make.graphics(config, addToScene)`: `add` es un **argumento posicional** y no
   está tipado en `Options`. Usar `make.graphics()` para generar texturas (no
   dibuja nada) y `add.graphics()` para dibujar visible.
@@ -51,14 +79,22 @@ Verificado en 4.2.1 leyendo el paquete instalado. **No trasladar suposiciones de
   `start` apaga la escena que llama, `launch` no.
 - `setVelocity` **no existe** en un GameObject base, solo en los plugins de
   físicas. Para mover sin motor: `setPosition` con `delta`. Para solapamiento:
-  `Phaser.Geom.Intersects.RectangleToRectangle(a.getBounds(), b.getBounds())`.
-  `getBounds()` devuelve un rect **reutilizado**: no retenerlo entre iteraciones.
+  `Geom.Intersects.RectangleToRectangle(a.getBounds(), b.getBounds())`
+  (`Geom` viene del import nombrado de `phaser`).
 - Sin cambios respecto de v3: `add.text`, `input.keyboard.addKeys`,
   `createCursorKeys`, `addKey` y `.isDown`. El evento `'keydown-<TECLA>'` se
   emite una sola vez por pulsación (`emitOnRepeat` viene en `false`).
 - **`npm create phaser` no es oficial**: `create-phaser` es un paquete de
   terceros de 2023. La vía oficial son los templates de GitHub
   (`phaserjs/template-vite`), que además pinean `phaser@4.0.0`.
+
+### Trampa del estado de partida (ya resuelta, no la repitas)
+
+`EstadoPartida.estado` debe volver a `JUGANDO` en **cada** transición. Si
+`avanzarDeNivel()` no lo hace, el nivel nuevo hereda `NIVEL_CUMPLIDO` del
+anterior, `update()` sale por `if (!enJuego) return` y **el juego queda
+congelado**: sin movimiento, sin colisiones y sin poder completar el nivel.
+Cualquier estado nuevo necesita su transición.
 
 ## Leer el GDD
 
@@ -112,19 +148,29 @@ por cantidad y frecuencia de enemigos y obstáculos (§14), no con sistemas nuev
 
 ## Recursos gráficos
 
-**Todavía no hay ningún asset.** El usuario va a crear los sprites en pixel art y
-la música, y hasta entonces se usan **mockups provisionales**.
+**El arte definitivo ya está en `assets/`**: 8 PNG de sprites, 2 pistas de música
+y 8 efectos. Los `.pxo` son archivos de proyecto de Aseprite y están ignorados
+por `.gitignore`; el juego nunca los carga.
 
-- `Boot` genera los mockups con `Graphics.generateTexture`. El interruptor está
-  en `ASSETS.modoMockup` de `src/config/parametros.js`: **ponerlo en `false`
-  cuando el usuario incorpore los sprites reales**, y `Boot` los cargará desde
-  `assets/` con las claves de `ASSETS.claves`.
-- Las claves de textura son el contrato con el arte final: no renombrarlas sin
-  actualizar `ASSETS.claves`.
+- Las claves de textura (`ASSETS.claves`) y de audio (`AUDIO.sfx`,
+  `AUDIO.musica`) son el contrato con el arte. **No renombrarlas** sin actualizar
+  la referencia del otro lado.
+- `ASSETS.modoMockup` en `src/config/parametros.js` permite volver a generar
+  figuras simples en runtime para desarrollar sin los PNG. Hoy está en `false`.
 - **No elegir, crear ni inventar nombres o rutas de assets sin confirmarlo con
   el usuario.** Preguntar siempre si se quiere mockup o recurso existente.
 - Si un archivo esperado no está, pedirlo antes de avanzar con lo que dependa de
   él; seguir con la lógica que no dependa de él.
+
+## Pendientes
+
+- **Tuning sin validar contra el juego real.** Todos los valores de §10 y §14
+  (duración, cantidades, frecuencias) son estimaciones razonables, no valores
+  medidos. Falta que el usuario juegue y los ajuste.
+- La barra de progreso de §17 sigue fuera de alcance por decisión del usuario.
+- Sin lint, typecheck ni tests. `EstadoPartida` es el candidato natural a tests
+  unitarios: las reglas de vidas y puntuación son puras y fáciles de verificar.
+- Sin ícono de ventana: el favicon por defecto es el de Vite.
 
 ## Flujo de trabajo
 

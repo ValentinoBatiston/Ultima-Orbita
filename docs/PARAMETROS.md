@@ -48,11 +48,15 @@ Objetivo de duración: **150 s por nivel** (2.5 min), dentro del rango de 2-3 mi
 | Proyectil enemigo | 300 px/s hacia abajo | | |
 | Velocidad asteroide | 60 px/s | 85 px/s | 110 px/s |
 | Spawn asteroide | cada 2.5 s | cada 1.8 s | cada 1.3 s |
+| Spawn escombros | — | cada 4 s | cada 2.5 s |
 | Escombros | no aparecen | grupos de 2-3 | grupos de 3-5 |
 
 El intervalo de disparo enemigo baja 0.25 s por nivel, según lo acordado. La
 dificultad sube por velocidad de scroll, cantidad y frecuencia, nunca con sistemas
 nuevos (§14).
+
+Los intervalos de aparición miden **distancia recorrida y no tiempo**, para que la
+densidad no cambie con la tasa de frames.
 
 El Nivel 1 es el único con enemigos estrictamente en línea recta (§9). Los niveles
 2 y 3 suman desplazamientos horizontales y perpendiculares.
@@ -70,6 +74,13 @@ Los escombros no aparecen en el Nivel 1: §10 solo los menciona para los niveles
 | Invulnerabilidad | 2 s, con parpadeo |
 | Progreso del nivel | **se conserva** |
 
+## Fuera de alcance por ahora
+
+- **Barra de progreso** de §17: decidida como fuera de alcance. No implementar
+  salvo pedido explícito.
+- Mejoras de armas, árboles de habilidades, inventarios, multijugador y niveles
+  adicionales, según §21.
+
 ## Puntuación
 
 | Evento | Puntos |
@@ -82,14 +93,17 @@ puntuación acumula entre niveles y se muestra en Victoria y en Game Over (§15)
 
 **Récord:** se compara solo dentro de la sesión, sin persistencia en disco.
 
-## Fuera de alcance por ahora
+## Estado de validación
 
-- **Barra de progreso** de §17: decidida como fuera de alcance. No implementar
-  salvo pedido explícito.
-- **Sprites y audio reales**: los crea el usuario. Hasta entonces, mockups
-  provisionales.
-- Mejoras de armas, árboles de habilidades, inventarios, multijugador y niveles
-  adicionales, según §21.
+**Estos valores no están validados jugando.** Son estimaciones razonables para
+cumplir el rango de 2-3 min por nivel, pero nadie los probó todavía. Lo que sí
+está verificado es que el juego corre de punta a punta: los tres niveles avanzan,
+las vidas se comparten, la puntuación acumula y Victoria y Game Over se disparan
+en el momento correcto.
+
+Lo que falta es jugar y ajustar la sensación: si el nivel 1 resulta muy vacío o
+el 3 demasiado pesado, los números se cambian acá y en
+`src/config/parametros.js`.
 
 ## Pantallas
 

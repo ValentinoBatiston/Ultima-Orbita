@@ -53,7 +53,8 @@ export const NIVELES = {
         disparoEnemigoMs: 1500,
         velocidadAsteroide: 60,
         spawnAsteroideMs: 2500,
-        escombros: null
+        escombros: null,
+        spawnEscombrosMs: null
     },
     2: {
         nombre: 'Campo de Escombros',
@@ -66,7 +67,8 @@ export const NIVELES = {
         disparoEnemigoMs: 1250,
         velocidadAsteroide: 85,
         spawnAsteroideMs: 1800,
-        escombros: { gruposMin: 2, gruposMax: 3 }
+        escombros: { gruposMin: 2, gruposMax: 3 },
+        spawnEscombrosMs: 4000
     },
     3: {
         nombre: 'Última Órbita',
@@ -79,8 +81,45 @@ export const NIVELES = {
         disparoEnemigoMs: 1000,
         velocidadAsteroide: 110,
         spawnAsteroideMs: 1300,
-        escombros: { gruposMin: 3, gruposMax: 5 }
+        escombros: { gruposMin: 3, gruposMax: 5 },
+        spawnEscombrosMs: 2500
     }
+};
+
+/**
+ * Claves de audio. Los nombres coinciden con los archivos reales de assets/.
+ * Si se renombra un archivo, se actualiza acá.
+ *
+ * §20 pide ocho efectos y una sola música para los tres niveles.
+ */
+export const AUDIO = {
+    sfx: {
+        disparoJugador: 'sfx-player-shoot',
+        disparoEnemigo: 'sfx-enemy-shoot',
+        impacto: 'sfx-impact',
+        enemigoDestruido: 'sfx-enemy-destroyed',
+        vidaPerdida: 'sfx-life-lost',
+        estacionAlcanzada: 'sfx-station-reached',
+        victoria: 'sfx-victory',
+        gameOver: 'sfx-game-over'
+    },
+    musica: {
+        menu: 'music-menu',
+        juego: 'music-game'
+    },
+    volumen: {
+        sfx: 0.6,
+        musicaMenu: 0.4,
+        musicaJuego: { 1: 0.55, 2: 0.7, 3: 0.85 }
+    }
+};
+
+/**
+ * Rutas de audio dentro de assets/, relativas a la raíz servida.
+ */
+export const RUTAS_AUDIO = {
+    sfx: 'sfx/',
+    musica: 'music/'
 };
 
 export const ASSETS = {
@@ -90,7 +129,7 @@ export const ASSETS = {
      *
      * Poner en false cuando incorporates los sprites definitivos.
      */
-    modoMockup: true,
+    modoMockup: false,
 
     /** Claves de textura que espera el juego. */
     claves: {
@@ -109,16 +148,27 @@ export const ASSETS = {
      * (ver vite.config.js), así que las carpetas cuelgan de la raíz.
      */
     rutas: {
-        sprites: 'sprites/',
-        musica: 'music/',
-        sfx: 'sfx/'
+        sprites: 'sprites/'
     },
 
-    /** Claves de música por nivel, además del menú. */
-    musica: {
-        menu: 'music-menu',
-        nivel1: 'music-level-1',
-        nivel2: 'music-level-2',
-        nivel3: 'music-level-3'
+    /**
+     * Una sola pista para los tres niveles, por decisión del usuario.
+     * Ver AUDIO.musica y RUTAS_AUDIO.
+     */
+
+    /**
+     * Tamaño de display de cada sprite, medido en los PNG reales.
+     * Los PNG vienen de 64x64 aunque el dibujo ocupe menos, así que acá se
+     * define a qué tamaño se dibujan en pantalla.
+     */
+    escala: {
+        nave: 48,
+        enemigo: 48,
+        asteroide: 48,
+        escombro: 40,
+        balaJugador: 10,
+        balaEnemigo: 10,
+        estacion: 240,
+        estrella: 12
     }
 };
