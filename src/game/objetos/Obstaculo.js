@@ -12,6 +12,7 @@
 import { Math as PhaserMath } from 'phaser';
 
 import { ASSETS, NIVELES, PANTALLA } from '../../config/parametros.js';
+import { aplicarHitbox } from './hitbox.js';
 import { crearSprite } from './sprite.js';
 
 export default class Obstaculo {
@@ -33,6 +34,7 @@ export default class Obstaculo {
         this.velocidad = cfg.velocidadAsteroide;
         this.sprite = crearSprite(scene, clave, x, -ancho, ancho);
         this.sprite.setDepth(11);
+        aplicarHitbox(this.sprite, esAsteroide ? 'asteroide' : 'escombro');
 
         // Los escombros giran un poco: son restos sueltos (§8).
         this.rotacion = esAsteroide ? 0 : PhaserMath.FloatBetween(-0.6, 0.6);

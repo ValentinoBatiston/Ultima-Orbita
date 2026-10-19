@@ -13,6 +13,7 @@
 import { Math as PhaserMath } from 'phaser';
 
 import { ASSETS, NIVELES, PANTALLA } from '../../config/parametros.js';
+import { aplicarHitbox } from './hitbox.js';
 import { crearSprite } from './sprite.js';
 
 // -------------------------------------------------------------- estrategias
@@ -77,6 +78,7 @@ export default class Enemigo {
         const x = PhaserMath.Between(ancho, PANTALLA.ancho - ancho);
         this.sprite = crearSprite(scene, ASSETS.claves.enemigo, x, -ancho, ancho);
         this.sprite.setDepth(12);
+        aplicarHitbox(this.sprite, 'enemigo');
     }
 
     update(delta, tiempo) {

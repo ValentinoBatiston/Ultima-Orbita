@@ -20,13 +20,3 @@ export function crearSprite(scene, clave, x, y, anchoObjetivo) {
     sprite.setOrigin(0.5, 0.5);
     return sprite;
 }
-
-/**
- * Rectángulo de solapamiento entre dos sprites.
- *
- * `getBounds()` devuelve un rectángulo reutilizado del GameObject: hay que
- * consumirlo en el momento, no guardarlo en una variable entre iteraciones.
- */
-export function seSolapan(a, b) {
-    return Geom.Intersects.RectangleToRectangle(a.getBounds(), b.getBounds());
-}

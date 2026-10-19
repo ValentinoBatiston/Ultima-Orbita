@@ -19,6 +19,34 @@ código: cambiar los números ahí, no en las escenas.
 Vertical tipo arcade, conducive a pixel art con píxel entero, y encaja exacto a
 1080p con factor 1.5. No sale de estos límites en ningún momento.
 
+**El ancho exacto donde se mueve el jugador es 480 px.** La estación ahora se
+dibuja a 480 px de ancho, o sea cubre la pantalla de punta a punta. Su PNG
+original mide 480×200, así que con `ASSETS.escala.estacion = 480` sale a escala
+1:1. Si se agranda el dibujo en el PNG, hay que **subir** ese número para que
+siga cubriendo el ancho: el valor es el ancho con el que se dibuja, no el del
+archivo.
+
+## Hitboxes
+
+El rectángulo de un sprite es la caja completa del PNG, y los sprites tienen
+margenes: el asteroide es una roca redonda dentro de un cuadro de 64×64. Con la
+caja completa, el jugador recibía daño **antes de tocar el dibujo**.
+
+Cada objeto lleva su hitbox pegada (`src/game/objetos/hitbox.js`) y las
+colisiones la consultan:
+
+| Objeto | Forma | Factor | Tamaño efectivo |
+|---|---|---|---|
+| Nave del jugador | círculo | 0.30 | diámetro 14 px sobre 48 |
+| Asteroide | círculo | 0.34 | diámetro 16 px sobre 48 |
+| Nave enemiga | rectángulo | 0.72 | 35 × 35 |
+| Escombro | rectángulo | 0.58 | 23 × 23 |
+| Proyectil | rectángulo | 0.85 | 8 × 13 |
+| Estación | rectángulo | 0.80 | 384 × 160 |
+
+El factor es la parte del sprite que ocupa la hitbox. Bajarlo hace que los
+obstáculos perdonen más; subirlo los hace más peligrosos.
+
 ## Nave del jugador
 
 | Parámetro | Valor |
@@ -84,6 +112,23 @@ El Nivel 1 es el único con enemigos estrictamente en línea recta (§9). Los ni
 
 Los escombros no aparecen en el Nivel 1: §10 solo los menciona para los niveles
 2 y 3.
+
+### La estación marca el final del nivel
+
+Cuando la estación entra **entera** en la pantalla, el mundo se congela: el
+fondo deja de moverse, no aparecen enemigos ni obstáculos nuevos y aparece un
+aviso en pantalla. El jugador sigue moviéndose y tiene que subir a entrar en
+la estación, que es lo que gana el nivel.
+
+Los obstáculos que ya estaban en pantalla **siguen bajando** aunque el mundo
+esté congelado: se apartan solos y despejan el camino. Si quedaran inmóviles,
+uno podría tapar la entrada y el nivel quedaría trabado, porque los obstáculos
+no se pueden destruir (§8).
+
+La estación aparece cuando falta una pantalla entera de recorrido
+(`distanciaRecorrida >= distancia - 720`) y tarda unos 3 s en bajar hasta quedar
+completa. El congelamiento ocurre con su centro en `y = 100`, o sea de 0 a 201
+px: entera y arriba de todo.
 
 ### Cuánto se ve en pantalla
 

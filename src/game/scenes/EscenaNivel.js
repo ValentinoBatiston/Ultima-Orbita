@@ -19,7 +19,7 @@ import Fondo from '../objetos/Fondo.js';
 import Generador from '../objetos/Generador.js';
 import Nave from '../objetos/Nave.js';
 import Proyectiles from '../objetos/Proyectiles.js';
-import { seSolapan } from '../objetos/sprite.js';
+import { seSolapan } from '../objetos/hitbox.js';
 import Sonido from '../servicios/Sonido.js';
 
 const PAUSA_POR_MUERTE_MS = 700;
@@ -70,6 +70,7 @@ export default class EscenaNivel extends Scene {
         this.estacion.sprite.y = -this.estacion.sprite.displayHeight;
         this.estacion.sprite.setVisible(false);
         this.estacionVisible = false;
+        this.mundoCongelado = false;
 
         this.registrarTeclas();
 
@@ -105,33 +106,94 @@ export default class EscenaNivel extends Scene {
     update(time, delta) {
         const dt = delta / 1000;
 
-        // El avance y el scroll ocurren siempre, también durante la pausa por
-        // muerte: el nivel no se detiene.
-        this.distanciaRecorrida += this.cfg.velocidadScroll * dt;
-        this.estado.sumarAvance(this.cfg.velocidadScroll * dt);
+        // Cuando la estación ya se ve entera, el mundo se congela: el scroll
+        // se detiene para que quede claro que ahí termina el nivel y no es un
+        // obstáculo más. El jugador sigue moviéndose y tiene que subir a
+        // entrar en la estación.
+        if (!this.mundoCongelado) {
+            this.distanciaRecorrida += this.cfg.velocidadScroll * dt;
+            this.estado.sumarAvance(this.cfg.velocidadScroll * dt);
+            this.fondo.update(delta);
 
-        this.fondo.update(delta);
-
-        // La estación entra en pantalla cuando falta una pantalla entera de
-        // recorrido, para que el jugador la encuentre al final del sector.
-        if (!this.estacionVisible && this.distanciaRecorrida >= this.cfg.distancia - PANTALLA.alto) {
-            this.estacionVisible = true;
-            this.estacion.sprite.setVisible(true);
-        }
-        if (this.estacionVisible) {
-            this.estacion.update(delta);
+            // La estación entra en pantalla cuando falta una pantalla entera
+            // de recorrido, para que el jugador la encuentre al final.
+            if (!this.estacionVisible && this.distanciaRecorrida >= this.cfg.distancia - PANTALLA.alto) {
+                this.estacionVisible = true;
+                this.estacion.sprite.setVisible(true);
+            }
+            if (this.estacionVisible) {
+                this.estacion.update(delta);
+                if (this.estacionTotalmenteVisible()) {
+                    this.congelarMundo();
+                }
+            }
         }
 
         if (!this.estado.enJuego) return;
 
         this.nave.mover(this.direcciones, delta);
         this.proyectiles.update(delta);
+
+        // Los obstáculos que ya están en pantalla siguen bajando aunque el
+        // mundo esté congelado: se apartan solos y despejan el camino a la
+        // estación. Si quedaran inmóviles, uno podría tapar la entrada y el
+        // nivel quedaría trabado, porque los obstáculos no se pueden
+        // destruir (§8).
         this.generador.mover(delta, time);
-        this.generador.generar(this.distanciaRecorrida);
+
+        if (!this.mundoCongelado) {
+            this.generador.generar(this.distanciaRecorrida);
+        }
 
         this.disparar();
         this.dispararEnemigos(time);
         this.revisarColisiones();
+    }
+
+    /**
+     * ¿La estación ya entra entera en la pantalla?
+     *
+     * OJO: el origen del sprite es 0.5, así que sprite.y es el CENTRO. Para
+     * saber si entra entera hay que mirar arriba y abajo, no comparar y contra
+     * 0. Con el error anterior el mundo se congelaba con la mitad de la
+     * estación fuera de la pantalla.
+     */
+    estacionTotalmenteVisible() {
+        const s = this.estacion.sprite;
+        const arriba = s.y - s.displayHeight / 2;
+        const abajo = s.y + s.displayHeight / 2;
+        return arriba >= 0 && abajo <= PANTALLA.alto;
+    }
+
+    /**
+     * Detiene el mundo y avisa que la estación es el final del nivel.
+     * Se congela y no se pausa: la nave sigue respondiendo, así que el
+     * jugador sube a entrar en la estación.
+     */
+    congelarMundo() {
+        this.mundoCongelado = true;
+
+        const cx = PANTALLA.ancho / 2;
+        this.avisoEstacion = this.add
+            .text(cx, 70, '¡ESTACIÓN!  ACERCATE PARA TERMINAR EL NIVEL', {
+                fontFamily: 'monospace',
+                fontSize: '15px',
+                color: '#6ce0ff',
+                align: 'center',
+                backgroundColor: '#05060fcc',
+                padding: { x: 8, y: 5 }
+            })
+            .setOrigin(0.5, 0.5)
+            .setDepth(30);
+
+        // Latido suave para que destaque del fondo.
+        this.tweens.add({
+            targets: this.avisoEstacion,
+            alpha: 0.55,
+            duration: 700,
+            yoyo: true,
+            repeat: -1
+        });
     }
 
     /**
@@ -281,6 +343,7 @@ export default class EscenaNivel extends Scene {
 
     limpiar() {
         if (this.sonido) this.sonido.detenerMusica();
+        if (this.avisoEstacion) this.avisoEstacion.destroy();
         if (this.proyectiles) this.proyectiles.destruir();
         if (this.generador) this.generador.limpiar();
         if (this.nave) this.nave.destruir();

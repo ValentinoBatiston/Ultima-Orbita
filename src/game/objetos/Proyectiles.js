@@ -10,6 +10,7 @@
  * §9: las naves enemigas también disparan proyectiles hacia el jugador.
  */
 import { ASSETS, NAVE, PROYECTIL_ENEMIGO } from '../../config/parametros.js';
+import { aplicarHitbox } from './hitbox.js';
 import { crearSprite } from './sprite.js';
 
 export default class Proyectiles {
@@ -32,6 +33,7 @@ export default class Proyectiles {
             ASSETS.escala.balaJugador
         );
         sprite.setDepth(20);
+        aplicarHitbox(sprite, 'proyectil');
         this.lista.push({ sprite, vy: -NAVE.velocidadProyectil, delJugador: true });
     }
 
@@ -45,6 +47,7 @@ export default class Proyectiles {
             ASSETS.escala.balaEnemigo
         );
         sprite.setDepth(15);
+        aplicarHitbox(sprite, 'proyectil');
         this.lista.push({ sprite, vy: PROYECTIL_ENEMIGO.velocidad, delJugador: false });
     }
 

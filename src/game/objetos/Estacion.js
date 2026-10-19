@@ -9,6 +9,7 @@
  * para que la estación sea alcanzable esquivando y no saltando el tramo final.
  */
 import { ASSETS, PANTALLA } from '../../config/parametros.js';
+import { aplicarHitbox } from './hitbox.js';
 import { crearSprite } from './sprite.js';
 
 export default class Estacion {
@@ -24,6 +25,7 @@ export default class Estacion {
         const ancho = ASSETS.escala.estacion;
         this.sprite = crearSprite(scene, ASSETS.claves.estacion, PANTALLA.ancho / 2, -ancho, ancho);
         this.sprite.setDepth(8);
+        aplicarHitbox(this.sprite, 'estacion');
 
         this.velocidad = velocidadScroll;
     }

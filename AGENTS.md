@@ -103,6 +103,30 @@ Si se comparan los milisegundos contra la distancia sin convertir, un intervalo
 de 2000 ms se vuelve 2000 píxeles, que a 90 px/s son **33 segundos** en vez de 2.
 Pasó: el nivel 1 quedaba vacío y parecía un problema de tuning.
 
+### Trampa del origen de los sprites (resuelta, no la repitas)
+
+`crearSprite()` deja el origen en **0.5**, así que **`sprite.x` y `sprite.y` son
+el centro**, no la esquina superior izquierda. Cualquier cálculo de "cabe
+dentro de la pantalla" tiene que usar el centro más la mitad del tamaño:
+
+```js
+const arriba = s.y - s.displayHeight / 2;
+const abajo = s.y + s.displayHeight / 2;
+```
+
+Comparar `s.y >= 0` contra el borde de la pantalla congela el mundo con la
+mitad del objeto fuera de la vista.
+
+### Trampa de las hitboxes (resuelta, no la repitas)
+
+El rectángulo de un sprite es la caja completa del PNG, y los sprites tienen
+margen: el asteroide es una roca redonda dentro de un cuadro de 64×64. Con la
+caja completa, el jugador recibía daño antes de tocar el dibujo.
+
+Las hitboxes están en `src/game/objetos/hitbox.js`: cada sprite lleva su
+descripción pegada y `seSolapan()` la consulta. Para cambiar cómo de
+pegadizo es un objeto, tocar el factor ahí, no el código de colisiones.
+
 ### Trampa de la estación (resuelta, no la repitas)
 
 La estación espacial marca el final del nivel (§10). En pantalla tiene que **entrar

@@ -167,6 +167,10 @@ export const ASSETS = {
      * Tamaño de display de cada sprite, medido en los PNG reales.
      * Los PNG vienen de 64x64 aunque el dibujo ocupe menos, así que acá se
      * define a qué tamaño se dibujan en pantalla.
+     *
+     * `estacion` es el ancho con el que se DIBUJA, no el del PNG: el PNG mide
+     * 480x200 y con 480 sale del ancho completo de la pantalla. Si se agranda
+     * el dibujo, hay que subir este número para que siga cubriendo la pantalla.
      */
     escala: {
         nave: 48,
@@ -175,7 +179,7 @@ export const ASSETS = {
         escombro: 40,
         balaJugador: 10,
         balaEnemigo: 10,
-        estacion: 240,
+        estacion: 480,
         estrella: 12
     }
 };

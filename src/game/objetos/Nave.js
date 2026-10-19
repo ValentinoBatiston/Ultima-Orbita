@@ -9,6 +9,7 @@
  * abajo, con 2 s de invulnerabilidad y sin perder el avance del nivel.
  */
 import { ASSETS, NAVE, PANTALLA } from '../../config/parametros.js';
+import { aplicarHitbox } from './hitbox.js';
 import { crearSprite } from './sprite.js';
 
 export default class Nave {
@@ -19,6 +20,7 @@ export default class Nave {
         const ancho = ASSETS.escala.nave;
         this.sprite = crearSprite(scene, ASSETS.claves.nave, NAVE.xReaparicion, NAVE.yReaparicion, ancho);
         this.sprite.setDepth(10);
+        aplicarHitbox(this.sprite, 'nave');
 
         this.vida = ancho * 0.6; // hitbox más chica que el sprite
         this.invulnerable = false;
