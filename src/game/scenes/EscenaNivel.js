@@ -60,10 +60,16 @@ export default class EscenaNivel extends Scene {
         this.sonido = new Sonido(this);
         this.sonido.musica(AUDIO.musica.juego, AUDIO.volumen.musicaJuego[this.nivel]);
 
-        // La estación arranca por debajo de la distancia del nivel, así que
-        // entra en pantalla cuando el jugador ya recorrió el sector (§10).
+        // La estación arranca ARRIBA de la pantalla, fuera de vista. Entra
+        // cuando el jugador ya recorrió el sector, y de ahí baja a la
+        // velocidad del scroll hasta cruzarse con la nave (§10).
+        //
+        // OJO: no puede nascer en y = distancia, porque y crece hacia abajo y
+        // quedaría por debajo de la pantalla, alejándose del jugador.
         this.estacion = new Estacion(this, this.cfg.velocidadScroll, this.nivel === 3);
-        this.estacion.sprite.y = this.cfg.distancia;
+        this.estacion.sprite.y = -this.estacion.sprite.displayHeight;
+        this.estacion.sprite.setVisible(false);
+        this.estacionVisible = false;
 
         this.registrarTeclas();
 
@@ -105,7 +111,16 @@ export default class EscenaNivel extends Scene {
         this.estado.sumarAvance(this.cfg.velocidadScroll * dt);
 
         this.fondo.update(delta);
-        this.estacion.update(delta);
+
+        // La estación entra en pantalla cuando falta una pantalla entera de
+        // recorrido, para que el jugador la encuentre al final del sector.
+        if (!this.estacionVisible && this.distanciaRecorrida >= this.cfg.distancia - PANTALLA.alto) {
+            this.estacionVisible = true;
+            this.estacion.sprite.setVisible(true);
+        }
+        if (this.estacionVisible) {
+            this.estacion.update(delta);
+        }
 
         if (!this.estado.enJuego) return;
 

@@ -103,6 +103,23 @@ Si se comparan los milisegundos contra la distancia sin convertir, un intervalo
 de 2000 ms se vuelve 2000 píxeles, que a 90 px/s son **33 segundos** en vez de 2.
 Pasó: el nivel 1 quedaba vacío y parecía un problema de tuning.
 
+### Trampa de la estación (resuelta, no la repitas)
+
+La estación espacial marca el final del nivel (§10). En pantalla tiene que **entrar
+desde arriba** y bajar a la velocidad del scroll.
+
+No puede nacer en `y = distancia` del nivel: la coordenada `y` crece hacia abajo,
+así que la estación quedaría miles de píxeles **por debajo** de la pantalla,
+alejándose del jugador, y el nivel sería imposible de completar. Nace arriba
+(`y = -alto`) y se muestra recién cuando `distanciaRecorrida >= distancia - 720`,
+para que aparezca cuando el jugador ya recorrió el sector.
+
+**Y verificar el flujo natural, no teleportando objetos.** Este bug sobrevivió a
+varias pruebas porque en todas se teletransportaba la estación encima de la nave
+para forzar el final del nivel. Al probar el recorrido real se vio que la
+estación nunca aparecía. Para comprobar un final de nivel, simular el recorrido
+completo y dejar que las cosas se crucen solas.
+
 ### Trampa del estado de partida (ya resuelta, no la repitas)
 
 `EstadoPartida.estado` debe volver a `JUGANDO` en **cada** transición. Si
@@ -179,9 +196,9 @@ por `.gitignore`; el juego nunca los carga.
 
 ## Pendientes
 
-- **Tuning sin validar contra el juego real.** Todos los valores de §10 y §14
-  (duración, cantidades, frecuencias) son estimaciones razonables, no valores
-  medidos. Falta que el usuario juegue y los ajuste.
+- **Tuning validado contra el juego real**, con la duración de los tres niveles
+  medida (~86 s cada uno). Falta ajustar la *sensación*: si el nivel 1 se siente
+  vacío o el 3 pesado, los números se cambian en `src/config/parametros.js`.
 - La barra de progreso de §17 sigue fuera de alcance por decisión del usuario.
 - Sin lint, typecheck ni tests. `EstadoPartida` es el candidato natural a tests
   unitarios: las reglas de vidas y puntuación son puras y fáciles de verificar.

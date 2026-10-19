@@ -39,10 +39,11 @@ Objetivo de duración: **150 s por nivel** (2.5 min), dentro del rango de 2-3 mi
 | Parámetro | Nivel 1 | Nivel 2 | Nivel 3 |
 |---|---|---|---|
 | Velocidad de scroll | 90 px/s | 120 px/s | 150 px/s |
-| Distancia del nivel | 13.500 px | 18.000 px | 22.500 px |
+| Distancia del nivel | 8.100 px | 10.800 px | 13.500 px |
+| **Duración** | **~85 s** | **~86 s** | **~87 s** |
 | Enemigos máx. simultáneos | 5 | 7 | 9 |
 | Intervalo de aparición de enemigo | cada 2 s | cada 1.5 s | cada 0.9 s |
-| Intervalo de aparición de asteroide | cada 2.5 s | cada 1.8 s | cada 1.4 s |
+| Intervalo de aparición de asteroide | cada 2.8 s | cada 2 s | cada 1.56 s |
 | Intervalo de aparición de escombros | — | cada 3 s | cada 2 s |
 | Grupo de escombros | no aparecen | 2-3 piezas | 3-5 piezas |
 | Velocidad enemigo | 70 px/s | 85 px/s | 100 px/s |
@@ -52,12 +53,18 @@ Objetivo de duración: **150 s por nivel** (2.5 min), dentro del rango de 2-3 mi
 | Velocidad asteroide | 60 px/s | 85 px/s | 110 px/s |
 | Escombros | no aparecen | sí | sí, más frecuentes |
 
+**La duración se acortó de 150 s a ~86 s** recortando la distancia del nivel, no
+la velocidad de scroll. Así la sensación de juego no cambia: la densidad en
+pantalla es la misma, lo que baja es la cantidad total de encuentros porque el
+recorrido es más corto.
+
 El intervalo de disparo enemigo baja 0.25 s por nivel, según lo acordado.
 
 **Los intervalos de aparición son TIEMPOS, no distancias.** El `Generador` los
-convierte a píxeles con la velocidad de scroll de cada nivel, para que la densidad
-no dependa de la tasa de frames. Una versión anterior comparaba milisegundos contra
-píxeles y los intervalos se iban de 2 s a 30 s, dejando el nivel 1 casi vacío.
+convierte a píxeles con la velocidad de scroll de cada nivel, para que la
+densidad no dependa de la tasa de frames. Una versión anterior comparaba
+milisegundos contra píxeles y los intervalos se iban de 2 s a 30 s, dejando el
+nivel 1 casi vacío.
 
 **Los objetos lentos permanecen más tiempo en pantalla.** Como la velocidad sube
 por nivel, un objeto del nivel 3 desaparece antes que uno del nivel 1, así que
@@ -80,15 +87,18 @@ Los escombros no aparecen en el Nivel 1: §10 solo los menciona para los niveles
 
 ### Cuánto se ve en pantalla
 
-Vida en pantalla ≈ `(720 + alto del sprite) / velocidad`. Medido en el navegador,
-con el juego corriendo:
+Vida en pantalla ≈ `(720 + alto del sprite) / velocidad`. Medido en el navegador
+con el juego corriendo, completing the levels de forma natural:
 
 | | Nivel 1 | Nivel 2 | Nivel 3 |
 |---|---|---|---|
-| Enemigos en pantalla | 5 | 6 | 9 |
+| Duración real | 85 s | 86 s | 87 s |
 | Asteroides en pantalla | 5 | 5 | 6 |
+| Enemigos en pantalla | 5 | 6 | 9 |
 | Escombros en pantalla | 0 | 8 | 12 |
 | Obstáculos totales | 5 | 13 | 18 |
+| Asteroides creados en el nivel | 30 | 43 | 56 |
+| Enemigos creados en el nivel | 36 | 57 | 96 |
 
 Los intervalos de aparición se miden por distancia en píxeles, no por tiempo: el
 `Generador` los convierte con la velocidad de scroll de cada nivel, para que la
