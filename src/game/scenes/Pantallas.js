@@ -10,6 +10,8 @@
 import { Scene } from 'phaser';
 
 import { AUDIO, NIVELES, PANTALLA } from '../../config/parametros.js';
+import { KEYS } from '../../enums/keys.js';
+import { getPhrase } from '../../services/translations.js';
 import { obtenerEstado } from '../estado/EstadoPartida.js';
 import Sonido from '../servicios/Sonido.js';
 import Fondo from '../objetos/Fondo.js';
@@ -34,7 +36,7 @@ function mostrarPuntuacion(scene, estado, y) {
     const nivel = NIVELES[estado.nivel];
 
     scene.add
-        .text(cx, y, `PUNTUACIÓN: ${estado.puntuacion}`, {
+        .text(cx, y, `${getPhrase(KEYS.PUNTUACION)} ${estado.puntuacion}`, {
             ...TEXTO,
             fontSize: '20px',
             color: '#5ad1ff'
@@ -42,12 +44,17 @@ function mostrarPuntuacion(scene, estado, y) {
         .setOrigin(0.5);
 
     scene.add
-        .text(cx, y + 32, `Mejor de la sesión: ${estado.mejorPuntuacion}`, TEXTO)
+        .text(cx, y + 32, `${getPhrase(KEYS.MEJOR_DE_LA_SESION)} ${estado.mejorPuntuacion}`, TEXTO)
         .setOrigin(0.5);
 
     if (nivel) {
         scene.add
-            .text(cx, y + 58, `Alcanzaste: Nivel ${estado.nivel} — ${nivel.nombre}`, TEXTO)
+            .text(
+                cx,
+                y + 58,
+                `${getPhrase(KEYS.ALCANZASTE_NIVEL)} ${estado.nivel} — ${nivel.nombre}`,
+                TEXTO
+            )
             .setOrigin(0.5);
     }
 }
@@ -65,18 +72,18 @@ export default class GameOver extends Scene {
         this.sonido = new Sonido(this);
         this.sonido.sfx(AUDIO.sfx.gameOver);
 
-        this.add.text(cx, 230, 'GAME OVER', TITULO).setOrigin(0.5);
-        this.add.text(cx, 286, 'Sin vidas restantes', TEXTO).setOrigin(0.5);
+        this.add.text(cx, 230, getPhrase(KEYS.GAME_OVER), TITULO).setOrigin(0.5);
+        this.add.text(cx, 286, getPhrase(KEYS.SIN_VIDAS_RESTANTES), TEXTO).setOrigin(0.5);
 
         mostrarPuntuacion(this, estado, 350);
 
         this.add
-            .text(cx, 540, 'ESPACIO para reiniciar desde el Nivel 1', {
+            .text(cx, 540, getPhrase(KEYS.ESPACIO_PARA_REINICIAR_DESDE_EL_NIVEL_1), {
                 ...TEXTO,
                 color: '#fff36b'
             })
             .setOrigin(0.5);
-        this.add.text(cx, 572, 'ESC para volver al menú', TEXTO).setOrigin(0.5);
+        this.add.text(cx, 572, getPhrase(KEYS.ESC_PARA_VOLVER_AL_MENU), TEXTO).setOrigin(0.5);
 
         esperarTecla(this, 'SPACE', () => {
             // §12: desde Game Over se reinicia siempre en el Nivel 1.
@@ -106,14 +113,19 @@ export class Victoria extends Scene {
         this.sonido = new Sonido(this);
         this.sonido.sfx(AUDIO.sfx.victoria);
 
-        this.add.text(cx, 190, 'MISIÓN', TITULO).setOrigin(0.5);
-        this.add.text(cx, 234, 'COMPLETADA', TITULO).setOrigin(0.5);
-        this.add.text(cx, 292, 'Alcanzaste la estación espacial final.', TEXTO).setOrigin(0.5);
+        this.add.text(cx, 190, getPhrase(KEYS.MISION), TITULO).setOrigin(0.5);
+        this.add.text(cx, 234, getPhrase(KEYS.COMPLETADA), TITULO).setOrigin(0.5);
+        this.add
+            .text(cx, 292, getPhrase(KEYS.ALCANZASTE_LA_ESTACION_ESPACIAL_FINAL), TEXTO)
+            .setOrigin(0.5);
 
         mostrarPuntuacion(this, estado, 360);
 
         this.add
-            .text(cx, 540, 'ESPACIO para volver al menú', { ...TEXTO, color: '#fff36b' })
+            .text(cx, 540, getPhrase(KEYS.ESPACIO_PARA_VOLVER_AL_MENU), {
+                ...TEXTO,
+                color: '#fff36b'
+            })
             .setOrigin(0.5);
 
         esperarTecla(this, 'SPACE', () => {

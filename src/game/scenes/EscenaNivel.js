@@ -13,6 +13,8 @@
 import { Scene } from 'phaser';
 
 import { AUDIO, NIVELES, PANTALLA } from '../../config/parametros.js';
+import { KEYS } from '../../enums/keys.js';
+import { getPhrase } from '../../services/translations.js';
 import { ESTADOS, obtenerEstado } from '../estado/EstadoPartida.js';
 import Estacion from '../objetos/Estacion.js';
 import Fondo from '../objetos/Fondo.js';
@@ -198,7 +200,7 @@ export default class EscenaNivel extends Scene {
 
         const cx = PANTALLA.ancho / 2;
         this.avisoEstacion = this.add
-            .text(cx, 70, '¡ESTACIÓN!  ACERCATE PARA TERMINAR EL NIVEL', {
+            .text(cx, 70, getPhrase(KEYS.ESTACION_ACERCATE_PARA_TERMINAR_EL_NIVEL), {
                 fontFamily: 'monospace',
                 fontSize: '15px',
                 color: '#6ce0ff',

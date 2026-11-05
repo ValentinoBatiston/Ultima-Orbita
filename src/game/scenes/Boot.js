@@ -14,6 +14,8 @@
 import { Scene } from 'phaser';
 
 import { ASSETS, AUDIO, RUTAS_AUDIO } from '../../config/parametros.js';
+import { EN, ES } from '../../enums/languages.js';
+import { getLanguageConfig, getTranslations } from '../../services/translations.js';
 import { urlDeAsset } from '../utilidades/assets.js';
 
 export default class Boot extends Scene {
@@ -29,10 +31,31 @@ export default class Boot extends Scene {
             if (ASSETS.modoMockup) {
                 this.generarMockups();
             }
-            this.scene.start('MenuPrincipal');
+            // Traducila: las traducciones se cargan ANTES de renderizar
+            // cualquier texto visible. El menú es la primera escena con
+            // texto, así que MenuPrincipal arranca recién en el callback.
+            // getTranslations no es síncrona (el oficial usa await o
+            // callback); acá se usa el callback que prevé la impl. oficial.
+            this.cargarIdioma(() => this.scene.start('MenuPrincipal'));
         });
 
         this.load.start();
+    }
+
+    /**
+     * Traducila: resuelve el idioma inicial y pide las traducciones.
+     *
+     * La interfaz solo usa los idiomas cargados en el proyecto (EN y ES):
+     * la impl. oficial puede devolver PT/DE desde la URL o el navegador, así
+     * que cualquier idioma que no sea EN cae a ES, que usa las keys en
+     * español como base y no depende de la red.
+     */
+    cargarIdioma(listo) {
+        const inicial = getLanguageConfig() === EN ? EN : ES;
+        // El idioma de la sesión queda en el registro para que escenas (menú,
+        // selector) sepan cuál está activo sin re-consultar la URL.
+        this.registry.set('idioma', inicial);
+        getTranslations(inicial, listo);
     }
 
     /**

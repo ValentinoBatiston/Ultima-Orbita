@@ -13,6 +13,8 @@
 import { Scene } from 'phaser';
 
 import { ESTADOS, obtenerEstado } from '../estado/EstadoPartida.js';
+import { KEYS } from '../../enums/keys.js';
+import { getPhrase } from '../../services/translations.js';
 
 const ESTILO = {
     fontFamily: 'monospace',
@@ -55,9 +57,18 @@ export default class HUD extends Scene {
     redibujar() {
         const e = this.estado;
 
-        this.textoNivel.setText(`NIVEL ${e.nivel}`);
-        this.textoPuntuacion.setText(`PUNTOS ${e.puntuacion + e.puntosDelNivel}`);
-        this.textoVidas.setText(`VIDAS ${'♥'.repeat(e.vidas)}`);
+        // Se re-resuelve cada refresco: si el idioma cambia en vivo, el HUD
+        // sigue la traducción sin recargar la escena.
+        this.textoNivel.setText(`${getPhrase(KEYS.NIVEL)} ${e.nivel}`);
+        this.textoPuntuacion.setText(`${getPhrase(KEYS.PUNTOS)} ${e.puntuacion + e.puntosDelNivel}`);
+
+        // La key viene con tres corazones fijos: la etiqueta (antes de los
+        // corazones) sale de la traducción y los corazones se repiten según
+        // las vidas de la partida.
+        const fraseVidas = getPhrase(KEYS.VIDAS);
+        const corte = fraseVidas.indexOf('♥');
+        const etiquetaVidas = corte >= 0 ? fraseVidas.slice(0, corte).trim() : fraseVidas;
+        this.textoVidas.setText(`${etiquetaVidas} ${'♥'.repeat(e.vidas)}`);
 
         // Fade out cuando la partida terminó: el HUD no compite con las
         // pantallas de Victoria o Game Over.

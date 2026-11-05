@@ -42,6 +42,13 @@ No hay lint, typecheck ni tests configurados. Si se agregan, documentarlos acá.
 - `src/game/servicios/Sonido.js` — SFX y música.
 - `src/game/servicios/Particulas.js` — explosiones, propulsión de motores y
   estela de proyectiles. Tuning en `PARTICULAS`; no cambia la jugabilidad.
+- `src/services/translations.js` — **impl. oficial de Traducila** (repo
+  `UNRaf-PROGRAMACION/phaser-traducila-ejemplo`), descargada literal: única
+  excepción, el valor de `PROJECT_ID`. NO refactorizar ni formatear.
+- `src/enums/` — `keys.js` (keys cargadas en Traducila, en español como base),
+  `languages.js` (literal del template: el official translations.js importa
+  DE/PT aunque el juego no los use; no "limpiarlos") y `status.js` (estados de
+  la integración, literal del template).
 - `src/game/utilidades/teclas.js` — `esperarTecla` (una pulsación = una acción).
 - `assets/` — `sprites/`, `music/`, `sfx/`. Es el `publicDir` de Vite, así que
   `assets/sprites/player.png` se carga como `'sprites/player.png'`.
@@ -58,6 +65,14 @@ No hay lint, typecheck ni tests configurados. Si se agregan, documentarlos acá.
 - **"Jugo" visual** en `Particulas` (servicio): la escena solo lo consulta por
   frame (propulsión y estela) y en cada muerte (explosión). El servicio no
   conoce la jugabilidad: recibe coordenadas, no estados.
+- **Traducila**: toda la interfaz pasa por `getPhrase(KEYS...)`. Las
+  traducciones se cargan en `Boot` (antes del menú) y el idioma inicial es
+  `EN` si llega `?lang=en`, `ES` en cualquier otro caso: las keys en español
+  son el fallback del impl. oficial y no dependen de la red. El menú trae
+  selector "Español | English" (nombres propios, no se traducen): al click
+  llama `getTranslations()` y re-resuelve los textos con `setText`, sin
+  recargar la escena. Los textos del HUD se re-resuelven en cada refresco
+  (10 Hz), así que el cambio de idioma se propaga en vivo.
 - **Command** implícito en `Nave.mover()`: recibe direcciones lógicas, no teclas,
   así que el único lugar que conoce WASD/flechas es `registrarTeclas`.
 - El HUD se refresca a 10 Hz con su propio `update`, no suscribiéndose a cada
