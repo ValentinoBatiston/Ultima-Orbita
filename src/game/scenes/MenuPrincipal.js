@@ -83,7 +83,7 @@ export default class MenuPrincipal extends Scene {
 
         const mejor = obtenerEstado(this).mejorPuntuacion;
         if (mejor > 0) {
-            this.texto(cx, 690, () => `${getPhrase(KEYS.MEJOR_DE_LA_SESION)} ${mejor}`, {
+            this.texto(cx, 703, () => `${getPhrase(KEYS.MEJOR_DE_LA_SESION)} ${mejor}`, {
                 ...TEXTO,
                 fontSize: '13px'
             });
@@ -119,7 +119,7 @@ export default class MenuPrincipal extends Scene {
     /** Dos labels clickeables, uno por idioma. Los nombres van sin traducir. */
     crearSelectorIdioma() {
         const cx = PANTALLA.ancho / 2;
-        const y = 648;
+        const y = 675;
 
         this.subrayadoIdioma = this.add
             .text(cx, y - 15, 'IDIOMA / LANGUAGE', {
