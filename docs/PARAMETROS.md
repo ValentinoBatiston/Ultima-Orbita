@@ -130,7 +130,34 @@ La estación aparece cuando falta una pantalla entera de recorrido
 completa. El congelamiento ocurre con su centro en `y = 100`, o sea de 0 a 201
 px: entera y arriba de todo.
 
-### Cuánto se ve en pantalla
+### Partículas ("jugo" visual)
+
+Efectos de decoración en `src/game/servicios/Particulas.js`, con la zona de
+tuning `PARTICULAS` en `src/config/parametros.js`. **No cambian la jugabilidad**
+y el usuario los pidió explícitamente: §21 prohíbe agregar sistemas de
+jugabilidad (armas, árboles de habilidades), no pulido visual.
+
+- Textura: un círculo blanco de 12×12 (`radio 4`) generado en runtime con
+  `Graphics.generateTexture`. **No es un asset de disco**: el color sale del
+  `tint` del emisor, así que no interactúa con el contrato de arte.
+- Explosión al morir: **núcleo** (22 chispas rápidas, blend ADD) para que se
+  vea con claridad `DÓNDE` murió y **humo** (12 partículas lentas, blend
+  SCREEN) que queda flotando un momento. Cada tipo tiene su paleta: enemigo
+  fuego (naranja/rojo), jugador azul y blanco.
+- Propulsión: chorrito continuo detrás de la nave del jugador (hacia abajo,
+  ángulos 68-112) y del enemigo (hacia arriba, 248-292). Se recoloca cada
+  frame; se apaga solo cuando la nave está oculta (muerte sin respawn).
+- Estela: chispita corta detrás de cada proyectil (amarilla la del jugador,
+  rosa la enemiga), una emisión manual por bala y por frame.
+
+API de Phaser 4.2.1 verificada leyendo el paquete instalado (no la web): el
+ParticleEmitter entra en el updateList de la escena y se actualiza solo;
+`explode(cantidad, x, y)` lanza una ráfaga única con frecuencia -1; y
+`emitParticleAt(x, y)` emite puntualmente para las estelas y la propulsión de
+los enemigos, que cambian de posición en cada frame. El emisor apaga y prende
+solo con el campo `emitting`.
+
+## Cuánto se ve en pantalla
 
 Vida en pantalla ≈ `(720 + alto del sprite) / velocidad`. Medido en el navegador
 con el juego corriendo, completing the levels de forma natural:

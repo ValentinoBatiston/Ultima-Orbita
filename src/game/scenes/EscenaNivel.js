@@ -19,6 +19,7 @@ import Fondo from '../objetos/Fondo.js';
 import Generador from '../objetos/Generador.js';
 import Nave from '../objetos/Nave.js';
 import Proyectiles from '../objetos/Proyectiles.js';
+import Particulas from '../servicios/Particulas.js';
 import { seSolapan } from '../objetos/hitbox.js';
 import Sonido from '../servicios/Sonido.js';
 
@@ -54,6 +55,11 @@ export default class EscenaNivel extends Scene {
         this.nave = new Nave(this, this.estado);
         this.generador = new Generador(this, this.nivel);
         this.proyectiles = new Proyectiles(this);
+
+        // Efectos de partículas: explosiones al morir, propulsión de las
+        // naves y estela de los proyectiles. Solo maquilla, no cambia
+        // la jugabilidad.
+        this.particulas = new Particulas(this);
 
         // §20: la música de juego arranca en loop y sube de intensidad con la
         // dificultad. Una sola pista para los tres niveles.
@@ -148,6 +154,23 @@ export default class EscenaNivel extends Scene {
         this.disparar();
         this.dispararEnemigos(time);
         this.revisarColisiones();
+
+        // Efectos de partículas, al final del update: muestran donde están
+        // las cosas DESPUÉS de que todo se movió. La propulsión del jugador
+        // sigue al sprite, así que si está oculto (murió, esperando el
+        // respawn) el chorrito se apaga solo.
+        this.particulas.propulsionJugador(this.nave.sprite);
+
+        for (const enemigo of this.generador.enemigos) {
+            this.particulas.propulsionEnemigo(enemigo.sprite.x, enemigo.sprite.y);
+        }
+
+        for (const bala of this.proyectiles.delJugador) {
+            this.particulas.estelaDeProyectil(bala.sprite.x, bala.sprite.y, true);
+        }
+        for (const bala of this.proyectiles.delEnemigo) {
+            this.particulas.estelaDeProyectil(bala.sprite.x, bala.sprite.y, false);
+        }
     }
 
     /**
@@ -243,6 +266,8 @@ export default class EscenaNivel extends Scene {
             for (const enemigo of [...this.generador.enemigos]) {
                 if (!seSolapan(bala.sprite, enemigo.sprite)) continue;
 
+                // La explosión va EN el lugar donde murió, antes de quitarlo.
+                this.particulas.explosion(enemigo.sprite.x, enemigo.sprite.y, 'enemigo');
                 this.proyectiles.quitar(bala);
                 this.generador.quitarEnemigo(enemigo);
                 this.estado.sumarEnemigoDestruido();
@@ -270,6 +295,9 @@ export default class EscenaNivel extends Scene {
         for (const enemigo of [...this.generador.enemigos]) {
             if (!seSolapan(enemigo.sprite, this.nave.sprite)) continue;
 
+            // Chocó: explotan los dos. La del jugador sale desde perderVida,
+            // que es el único punto donde se pierde una vida.
+            this.particulas.explosion(enemigo.sprite.x, enemigo.sprite.y, 'enemigo');
             this.generador.quitarEnemigo(enemigo);
             this.perderVida();
             return;
@@ -320,6 +348,9 @@ export default class EscenaNivel extends Scene {
     perderVida() {
         if (!this.estado.enJuego) return;
 
+        // La explosión marca el lugar exacto donde murió la nave; después
+        // reaparece centro-abajo con invulnerabilidad.
+        this.particulas.explosion(this.nave.sprite.x, this.nave.sprite.y, 'jugador');
         this.sonido.sfx(AUDIO.sfx.vidaPerdida, { volume: AUDIO.volumen.sfx });
         // §8: el impacto contra un obstáculo tiene su propio efecto.
         this.sonido.sfx(AUDIO.sfx.impacto, { volume: AUDIO.volumen.sfx * 0.8 });
@@ -344,6 +375,7 @@ export default class EscenaNivel extends Scene {
     limpiar() {
         if (this.sonido) this.sonido.detenerMusica();
         if (this.avisoEstacion) this.avisoEstacion.destroy();
+        if (this.particulas) this.particulas.destruir();
         if (this.proyectiles) this.proyectiles.destruir();
         if (this.generador) this.generador.limpiar();
         if (this.nave) this.nave.destruir();

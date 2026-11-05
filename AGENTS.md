@@ -40,6 +40,8 @@ No hay lint, typecheck ni tests configurados. Si se agregan, documentarlos acá.
 - `src/game/scenes/` — `Boot`, `MenuPrincipal`, `EscenaNivel`, `HUD`,
   `Pantallas.js` (GameOver + Victoria).
 - `src/game/servicios/Sonido.js` — SFX y música.
+- `src/game/servicios/Particulas.js` — explosiones, propulsión de motores y
+  estela de proyectiles. Tuning en `PARTICULAS`; no cambia la jugabilidad.
 - `src/game/utilidades/teclas.js` — `esperarTecla` (una pulsación = una acción).
 - `assets/` — `sprites/`, `music/`, `sfx/`. Es el `publicDir` de Vite, así que
   `assets/sprites/player.png` se carga como `'sprites/player.png'`.
@@ -53,6 +55,9 @@ No hay lint, typecheck ni tests configurados. Si se agregan, documentarlos acá.
   movimiento, sin condicionales acumuladas.
 - **Factory** en `Generador`: concentra los intervalos y límites de aparición de
   §9, §10 y §14.
+- **"Jugo" visual** en `Particulas` (servicio): la escena solo lo consulta por
+  frame (propulsión y estela) y en cada muerte (explosión). El servicio no
+  conoce la jugabilidad: recibe coordenadas, no estados.
 - **Command** implícito en `Nave.mover()`: recibe direcciones lógicas, no teclas,
   así que el único lugar que conoce WASD/flechas es `registrarTeclas`.
 - El HUD se refresca a 10 Hz con su propio `update`, no suscribiéndose a cada
@@ -84,6 +89,15 @@ Verificado en 4.2.1 leyendo el paquete instalado. **No trasladar suposiciones de
 - Sin cambios respecto de v3: `add.text`, `input.keyboard.addKeys`,
   `createCursorKeys`, `addKey` y `.isDown`. El evento `'keydown-<TECLA>'` se
   emite una sola vez por pulsación (`emitOnRepeat` viene en `false`).
+- Partículas (verificado en 4.2.1): el sistema es el de v3.60+,
+  `add.particles(x, y, textura, config)` devuelve un ParticleEmitter que se
+  agrega solo al updateList de la escena. `explode(cant, x, y)` tira una
+  ráfaga única; `emitParticleAt(x, y)` emite puntual; el campo `emitting`
+  apaga y prende el chorrito; las partículas vivas están en `emitter.alive`
+  (NO en `emitter.particles`), y `tint` acepta una lista de colores con una
+  al azar por partícula. Emisores destruidos con la escena: al cambiar de
+  nivel hay que dejar referencias en null o un update tardío emite sobre un
+  emisor muerto (v4 no avisa, truena con un null interno).
 - **`npm create phaser` no es oficial**: `create-phaser` es un paquete de
   terceros de 2023. La vía oficial son los templates de GitHub
   (`phaserjs/template-vite`), que además pinean `phaser@4.0.0`.

@@ -183,3 +183,99 @@ export const ASSETS = {
         estrella: 12
     }
 };
+
+/**
+ * "Jugo" visual: efectos de partículas. Solo lectura de la escena, no
+ * cambia la jugabilidad.
+ *
+ * Duraciones en ms, velocidades en px/s y ángulos en grados con la convención
+ * de Phaser: 0 = derecha, 90 = abajo (donde va el escape del jugador), 270 =
+ * arriba (donde va el escape del enemigo, que viaja hacia abajo).
+ *
+ * `escalaInicial`/`escalaFinal` multiplican la textura de la partícula, que
+ * mide `texturaLado` px: escala 2 sobre una textura de 12 px son 24 px.
+ *
+ * Las dos claves no cargan archivos: son texturas generadas en runtime con
+ * `Graphics.generateTexture`, igual que los mockups, y se les da color con
+ * `tint`. No son parte del contrato con el arte de `assets/`.
+ */
+export const PARTICULAS = {
+    claves: {
+        chispa: 'particula-chispa'
+    },
+    textura: { lado: 12, radio: 4 },
+
+    /**
+     * Ráfaga al morir: núcleo de chispas rápidas en el punto exacto (para que
+     * se vea DÓNDE murió) + humo lento que queda flotando.
+     */
+    explosion: {
+        nucleo: {
+            cantidad: 22,
+            velocidadMin: 90,
+            velocidadMax: 240,
+            vidaMin: 120,
+            vidaMax: 380,
+            escalaInicial: 1.1,
+            escalaFinal: 0
+        },
+        humo: {
+            cantidad: 12,
+            velocidadMin: 15,
+            velocidadMax: 70,
+            vidaMin: 380,
+            vidaMax: 780,
+            escalaInicial: 0.7,
+            escalaFinal: 2.4,
+            alphaInicial: 0.42
+        },
+        tintesEnemigo: [0xfff3b0, 0xffd166, 0xff8a3c, 0xff5030],
+        tintesJugador: [0xeafcff, 0x9be7ff, 0x2f8dff, 0xff6d9e]
+    },
+
+    /** Llama continua del motor, pegada a la parte de atrás de cada nave. */
+    propulsion: {
+        intervaloMs: 22,
+        vidaMin: 160,
+        vidaMax: 340,
+        escalaInicial: 1.05,
+        escalaFinal: 0,
+        jugador: {
+            tinte: [0xffd166, 0xff9a3c, 0xfff3b0],
+            anguloMin: 68,
+            anguloMax: 112,
+            velocidadMin: 40,
+            velocidadMax: 110,
+            separacion: 26
+        },
+        enemigo: {
+            tinte: [0xffb45e, 0xff7a3c],
+            anguloMin: 248,
+            anguloMax: 292,
+            velocidadMin: 40,
+            velocidadMax: 100,
+            separacion: 26
+        }
+    },
+
+    /** Estela corta detrás de cada proyectil. */
+    estela: {
+        vidaMin: 90,
+        vidaMax: 170,
+        escalaInicial: 0.9,
+        escalaFinal: 0,
+        velocidadMin: 15,
+        velocidadMax: 55,
+        separacion: 10,
+        jugador: {
+            tinte: 0xfff36b,
+            anguloMin: 68,
+            anguloMax: 112
+        },
+        enemigo: {
+            tinte: 0xff92e6,
+            anguloMin: 248,
+            anguloMax: 292
+        }
+    }
+};
